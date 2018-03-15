@@ -5,6 +5,8 @@ class Sprite(object):
 
 	def __init__(self, filePath):
 		self.spriteSheet = pygame.image.load(filePath)
+		self.x = 0
+		self.y = 0
 
 	def getImage(self, x, y, width, height):
 		image = pygame.Surface((width, height)).convert()
@@ -15,10 +17,6 @@ class Sprite(object):
 
 	def getSize(self):
 		return self.spriteSheet.get_rect()
-
-	def setPosition(self, x, y):
-		self.x = x
-		self.y = y
 
 	def setVector(self, xChange, yChange):
 		self.xChange = xChange

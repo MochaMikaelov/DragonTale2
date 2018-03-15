@@ -17,7 +17,7 @@ def main():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				quit()
-			if event.type == pygame.KEYDOWN:
+			elif event.type == pygame.KEYDOWN:
 				manager.keyPressed(pygame.key.name(event.key))
 			elif event.type == pygame.KEYUP:
 				manager.keyReleased(pygame.key.name(event.key))

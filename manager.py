@@ -1,14 +1,13 @@
-from state import  Level1State, MenuState, OptionState
+from state import  Level1State, MenuState
 
 class Manager():
 
 	def __init__(self):
 		self.currentState = 0
-		
+
 		self.states = [
 			MenuState(self),
-			OptionState(self),
-			Level1State(self)
+			Level1State()
 		]
 
 	def setState(self, state):

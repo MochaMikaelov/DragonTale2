@@ -1,56 +1,50 @@
 import constant
 import re
 
-from block import Block
 from sprite import Sprite
 
 class TileMap():
 
 	def __init__(self, tileSize, tilePath, mapPath):
-		tileSize = tileSize
+		self.tileSize = tileSize
 
-
-
-
-		#LOAD TILE IMAGES
 		tileSheet = Sprite(tilePath)
-
 		self.tileImages = []
-		for i in range(int(tileSheet.getSize().width / tileSize)):
-			self.tileImages.append(tileSheet.getImage(tileSize * i, 0, tileSize, tileSize))
+		for i in range(int(tileSheet.getSize().width / self.tileSize)):
+			self.tileImages.append(tileSheet.getImage(self.tileSize * i, 0, self.tileSize, self.tileSize))
 
-
-
-
-		#LOAD TILE MAP
 		lines = [line.rstrip("\n") for line in open(mapPath)]
-		self.numberOfColumns = int(lines[0])
-		self.numberOfRows = int(lines[1])
+		self.numberOfMaps = int(lines[0])
+		self.numberOfColumns = int(lines[1])
+		self.numberOfRows = int(lines[2])
 
-		self.imageMap = []
+		self.touchableMap = []
 		for i in range(self.numberOfRows):
-			self.imageMap.append(re.findall("\d+", lines[i + 2]))
+			self.touchableMap.append(re.findall("\d+", lines[i + 3]))
 
+		self.untouchableMaps = []
+		for a in range(self.numberOfMaps):
+			untouchableMap = []
+			for b in range(self.numberOfRows):
+				untouchableMap.append(re.findall("\d+", lines[3 + self.numberOfRows + (a * self.numberOfRows) + b]))
+			self.untouchableMaps.append(untouchableMap)
 
+		self.offset = 0
 
-		#LOAD COLLISION MAP
-		self.collisionMap = []
-		for i in range(self.numberOfRows):
-			self.collisionMap.append(re.findall("\d+", lines[i + 2 + self.numberOfRows]))
-
-
-
-		#CREATE BLOCKS
-		self.blockMap = []
-		for a in range(self.numberOfRows):
-			for b in range(self.numberOfColumns):
-				if int(self.collisionMap[a][b]) == 1:
-					block = Block(self.tileImages[int(self.imageMap[a][b]) - 1], b * tileSize, a * tileSize)
-					self.blockMap.append(block)
+	def setOffset(self, offset):
+		self.offset = offset
 
 	def update(self):
 		pass
 
 	def draw(self, display):
-		for block in self.blockMap:
-			display.blit(block.getImage(), block.getPosition())
+		for a in range(self.numberOfMaps):
+			for b in range(self.numberOfRows):
+				for c in range(self.numberOfColumns):
+					if not self.untouchableMaps[a][b][c] == "0":
+						display.blit(self.tileImages[int(self.untouchableMaps[a][b][c]) - 1], (c * self.tileSize + self.offset, b * self.tileSize))
+
+		for a in range(self.numberOfColumns):
+			for b in range(self.numberOfRows):
+				if not self.touchableMap[b][a] == "0":
+					display.blit(self.tileImages[int(self.touchableMap[b][a]) - 1], (a * self.tileSize + self.offset, b * self.tileSize))
