@@ -33,9 +33,9 @@ class TileMap():
 		blockMap = []
 		for a in range(int(self.lines[0])):
 			for b in range(int(self.lines[1])):
-				if b > 10 - int(public.boundExceed / 64):
+				if b > 9 - int(public.boundExceed / 64):
 					continue
-				elif b < -int(public.boundExceed / 64):
+				elif b < 1 - int(public.boundExceed / 64):
 					continue
 				for c in range(int(self.lines[2])):
 					if not self.untouchableMaps[a][c][b] == 0:
