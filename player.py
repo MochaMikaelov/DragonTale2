@@ -1,4 +1,4 @@
-import constant
+import public
 
 from sprite import Sprite
 
@@ -20,40 +20,35 @@ class Player():
 		self.moveLeft = False
 		self.moveRight = False
 
-		self.boundExceed = 0
-
 	def setStartPosition(self, x, y):
 		self.rect.x = x
 		self.rect.y = y
 
-	def getBoundExceed(self):
-		return self.boundExceed
-
 	def update(self):
-		if self.moveLeft:
-			if self.rect.x <= constant.displayDimensions[0] * 0.4 - self.rect.width:
-				self.rect.x = constant.displayDimensions[0] * 0.4 - self.rect.width
-				self.boundExceed += 5
-			else:
-				self.rect.x -= 5
-		elif self.moveRight:
-			if self.rect.x >= constant.displayDimensions[0] * 0.6:
-				self.rect.x = constant.displayDimensions[0] * 0.6
-				self.boundExceed -= 5
+		if self.moveRight:
+			if self.rect.x >= public.displayDimensions[0] * 0.6:
+				self.rect.x = public.displayDimensions[0] * 0.6
+				public.boundExceed -= 5
 			else:
 				self.rect.x += 5
+		elif self.moveLeft:
+			if self.rect.x <= public.displayDimensions[0] * 0.4 - self.rect.width:
+				self.rect.x = public.displayDimensions[0] * 0.4 - self.rect.width
+				public.boundExceed += 5
+			else:
+				self.rect.x -= 5
 
 	def draw(self, display):
 		display.blit(self.image, (self.rect.x, self.rect.y))
 
 	def keyPressed(self, key):
-		if key == "a":
-			self.moveLeft = True
-		elif key == "d":
+		if key == "d":
 			self.moveRight = True
+		elif key == "a":
+			self.moveLeft = True
 
 	def keyReleased(self, key):
-		if key == "a":
-			self.moveLeft = False
-		elif key == "d":
+		if key == "d":
 			self.moveRight = False
+		elif key == "a":
+			self.moveLeft = False
