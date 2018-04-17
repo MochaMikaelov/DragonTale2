@@ -1,40 +1,25 @@
 import public
 import pygame
 
-from state import  Level1, Menu
+from manager import Manager
 
-def main():
+pygame.font.init()
 
-	pygame.init()
-	pygame.display.set_caption(public.title)
+clock = pygame.time.Clock()
+display = pygame.display.set_mode(public.display_dimensions)
+manager = Manager()
 
-	clock = pygame.time.Clock()
-	display = pygame.display.set_mode(public.displayDimensions)
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            manager.key_pressed(event.key)
+        elif event.type == pygame.KEYUP:
+            manager.key_released(event.key)
+        elif event.type == pygame.QUIT:
+            quit()
 
-	states = [
-		Menu(),
-		Level1()
-	]
+    manager.update()
+    manager.draw(display)
 
-	while True:
-		for event in pygame.event.get():
-			if event.type == pygame.KEYDOWN:
-				states[public.currentState].keyPressed(pygame.key.name(event.key))
-			elif event.type == pygame.KEYUP:
-				states[public.currentState].keyReleased(pygame.key.name(event.key))
-			elif event.type == pygame.QUIT:
-				quit()
-
-		states[public.currentState].update()
-		states[public.currentState].draw(display)
-
-		pygame.display.flip()
-		clock.tick(public.fps)
-
-if __name__ == "__main__":
-	main()
-
-#TODO simplify event loop in main()
-#TODO simplify Menu.keyPressed()
-#TODO make a text centering mechanism for options and title in Menu.draw()
-#TODO optimise/simplify Level1().init(), Level1().update(), Level1().draw()
+    pygame.display.flip()
+    clock.tick(public.fps)

@@ -1,47 +1,49 @@
 import public
-import re
 
 from block import Block
 from sprite import Sprite
 
-class TileMap():
 
-	def __init__(self, mapPath):
-		tileSheet = Sprite("Resources/Sprites/tiles.png")
+class TileMap:
 
-		self.tileImages = []
-		for i in range(tileSheet.getSize().width // public.tileSize):
-			self.tileImages.append(tileSheet.getImage(public.tileSize * i, 0, public.tileSize, public.tileSize))
+    def __init__(self, map_path):
+        tile_sheet = Sprite("Resources/Sprites/tiles.png")
+        self.tile_images = [tile_sheet.get_image(public.tile_size * i, 0, public.tile_size, public.tile_size) for i in range(tile_sheet.sprite_sheet.get_rect().width // public.tile_size)]
 
-		self.lines = [line.strip("\n") for line in open(mapPath)]
+        self.lines = [[int(num) for num in line.strip("\n").split(" ")] for line in open(map_path)]
 
-		self.touchableMap = []
-		for i in range(int(self.lines[2])):
-			self.touchableMap.append([int(s) for s in self.lines[i + 3].split() if s.isdigit()])
+        self.touchable_map = [self.lines[i + 3] for i in range(self.lines[2][0])]
+        self.untouchable_maps = [[self.lines[3 + self.lines[2][0] + (a * self.lines[2][0]) + b] for b in range(self.lines[2][0])] for a in range(self.lines[0][0])]
 
-		self.untouchableMaps = []
-		for a in range(int(self.lines[0])):
-			untouchableMap = []
-			for b in range(int(self.lines[2])):
-				untouchableMap.append([int(s) for s in self.lines[3 + int(self.lines[2]) + (a * int(self.lines[2])) + b].split() if s.isdigit()])
-			self.untouchableMaps.append(untouchableMap)
+        self.blocks = []
 
-	def update(self):
-		pass
+        self.bound_exceed = None
 
-	def draw(self, display):
-		blockMap = []
-		for a in range(int(self.lines[0])):
-			for b in range(int(self.lines[1])):
-				if b > 10 - int(public.boundExceed / 64):
-					continue
-				elif b < -int(public.boundExceed / 64):
-					continue
-				for c in range(int(self.lines[2])):
-					if not self.untouchableMaps[a][c][b] == 0:
-						display.blit(self.tileImages[int(self.untouchableMaps[a][c][b]) - 1], (b * public.tileSize + public.boundExceed, c * public.tileSize))
-					if not self.touchableMap[c][b] == 0:
-						blockMap.append(Block(self.tileImages[int(self.touchableMap[c][b]) - 1], b * public.tileSize + public.boundExceed, c * public.tileSize))
+    def update(self):
+        self.blocks.clear()
 
-		for block in blockMap:
-			display.blit(block.getImage(), block.getPosition())
+        for a in range(self.lines[1][0]):
+            if a < -self.bound_exceed / public.tile_size - 1 or a > public.display_dimensions[0] / public.tile_size - self.bound_exceed / public.tile_size:
+                continue
+            for b in range(self.lines[2][0]):
+                if self.touchable_map[b][a] != 0:
+                    self.blocks.append(Block(self.tile_images[int(self.touchable_map[b][a]) - 1], a * public.tile_size + self.bound_exceed, b * public.tile_size))
+
+    def draw(self, display):
+        for a in range(self.lines[0][0]):
+            for b in range(self.lines[1][0]):
+                if b < -self.bound_exceed / public.tile_size - 1 or b > public.display_dimensions[0] / public.tile_size - self.bound_exceed / public.tile_size:
+                    continue
+                for c in range(self.lines[2][0]):
+                    if self.untouchable_maps[a][c][b] != 0:
+                        display.blit(self.tile_images[self.untouchable_maps[a][c][b] - 1], (b * public.tile_size + self.bound_exceed, c * public.tile_size))
+
+        for a in range(self.lines[1][0]):
+            if a < -self.bound_exceed / public.tile_size - 1 or a > public.display_dimensions[0] / public.tile_size - self.bound_exceed / public.tile_size:
+                continue
+            for b in range(self.lines[2][0]):
+                if self.touchable_map[b][a] != 0:
+                    display.blit(self.tile_images[self.touchable_map[b][a] - 1], (a * public.tile_size + self.bound_exceed, b * public.tile_size))
+
+    def set_exceed(self, bound_exceed):
+        self.bound_exceed = bound_exceed

@@ -1,6 +1,4 @@
-boundExceed = 0
-currentState = 0
-displayDimensions = (640, 480)
-fps = 120
-tileSize = 64
-title = "DragonTale"
+display_dimensions = (640, 480)
+fps = 60
+tile_size = 64
+title = "Dragon Tale"
